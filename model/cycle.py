@@ -5,7 +5,7 @@ import random
 
 class Cycle(object):
 
-    def __init__(self, cities: List[City]):
+    def __init__(self, cities: List[City] = None):
         self.__length = 0.0
         self.__cities = cities
 
@@ -14,6 +14,12 @@ class Cycle(object):
 
     def __gt__(self, other):
         return self.get_length() > other.get_length()
+
+    def __len__(self):
+        return len(self.__cities)
+
+    def __getitem__(self, index: int):
+        return self.__cities[index]
 
     def get_length(self) -> float:
         self.__length = 0.0

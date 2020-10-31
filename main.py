@@ -1,5 +1,6 @@
 from model.cycle import Cycle, City
 from model.population import Population
+from evolution.crossover import Crossover
 import pandas as pd
 import random
 
@@ -24,8 +25,13 @@ def load_data() -> Cycle:
 
 def init_population():
     cycle = load_data()
-    population = Population(cycle, 10)
+    population = Population()
+    population.rand_populate(cycle, 10)
     population.get_the_best()
+    crossover = Crossover()
+    crossover.uniform_crossover(population, 0.3)
+
+
 
 
 if __name__ == '__main__':
