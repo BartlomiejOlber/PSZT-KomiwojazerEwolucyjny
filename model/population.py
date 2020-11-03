@@ -9,6 +9,7 @@ class Population(object):
 
     def add_cycle(self, cycle: Cycle):
         self.__cycles.append(cycle)
+        self.__cycle_size
 
     def rand_populate(self, seed: Cycle, size: int):
         for i in range(size):
@@ -35,6 +36,9 @@ class Population(object):
 
     def get_cycles(self):
         return self.__cycles
+
+    def get_cycle_size(self):
+        return len(self.__cycles[0]) if self.__cycles else 0
 
     def __len__(self):
         return len(self.__cycles)

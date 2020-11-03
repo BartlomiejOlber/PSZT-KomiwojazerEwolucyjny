@@ -2,63 +2,81 @@ from model.population import Population, Cycle
 from model.city import City
 
 import random
+import numpy as np
 from copy import deepcopy
 
 
 class Crossover(object):
 
-    def uniform_crossover(self, population: Population, crossover_selection_param: float, crossover_param: float):
-        subpopulation = self.__make_subpopulation(population, crossover_selection_param)
+    def __init__(self, population: Population, crossover_selection_param: float, crossover_param: float):
+        self.__cycle_size = population.get_cycle_size()
+        self.__population = population
+        self.__crossover_selection_param = crossover_selection_param
+        self.__crossover_param = crossover_param
+
+    def uniform_crossover(self):
+        subpopulation = self.__make_subpopulation()
         it = subpopulation.get_iterator()
-        print()
-        print(len(subpopulation))
         while it.has_next():
             parent_1 = it.next()
             parent_2 = it.next()
-            cycle_size = len(parent_1)
-            crossover_bitmap = self.__make_crossover_bitmap(cycle_size, crossover_param)
-            child_1 = deepcopy(parent_1)
-            child_2 = deepcopy(parent_2)
-            cities_in_child_1 = set()
-            cities_in_child_2 = set()
-            for i in range(cycle_size):
-               if crossover_bitmap[i]:
-                   cities_in_child_1.add(child_1[i])
-                   cities_in_child_2.add(child_2[i])
-                   child_1[i] = parent_2[i]
-                   child_2[i] = parent_1[i]
+            self.__make_crossover_bitmap()
+            cities_to_reorder_1, cities_to_reorder_2, cities_for_straight_swap = self.__get_cities_to_cross(parent_1,
+                                                                                                            parent_2)
+            child_1, child_2 = self.__make_masked_children(parent_1, parent_2)
 
+            for i in range(self.__cycle_size):
+                if self.__crossover_bitmap[i] and parent_1[i] in cities_for_straight_swap:
+                    child_2[i] = parent_1[i]
+                elif self.__crossover_bitmap[i] and parent_2[i] in cities_for_straight_swap:
+                    child_1[i] = parent_2[i]
 
+            for i in range(self.__cycle_size):
+                if not child_1[i]:
+                    child_1[i] = cities_to_reorder_1.pop()
+                if not child_2[i]:
+                    child_2[i] = cities_to_reorder_2.pop()
 
-            print(type(parent_2))
-            print(parent_2)
-            print(type(parent_1))
-            print(parent_1)
+    def __get_cities_to_cross(self, parent_1: Cycle, parent_2: Cycle):
+        cities_to_cross_1 = set()
+        cities_to_cross_2 = set()
+        for i in range(len(self.__crossover_bitmap)):
+            if self.__crossover_bitmap[i]:
+                cities_to_cross_1.add(parent_1[i])
+                cities_to_cross_2.add(parent_2[i])
+        return cities_to_cross_1.difference(cities_to_cross_2), cities_to_cross_2.difference(cities_to_cross_1), \
+               cities_to_cross_1.intersection(cities_to_cross_2)
 
-    @staticmethod
-    def __make_crossover_bitmap(cycle_size: int, crossover_param: float):
-        bitmap = []
-        for i in range(cycle_size):
-            if random.uniform(0., 1.) < crossover_param:
-                bitmap.append(1)
+    def __make_crossover_bitmap(self):
+        self.__crossover_bitmap = []
+        for i in range(self.__cycle_size):
+            if random.uniform(0., 1.) < self.__crossover_param:
+                self.__crossover_bitmap.append(1)
             else:
-                bitmap.append(0)
-        return bitmap
+                self.__crossover_bitmap.append(0)
 
-    @staticmethod
-    def __make_subpopulation(population: Population, crossover_selection_parameter: float) -> Population:
+    def __make_masked_children(self, parent_1: Cycle, parent_2: Cycle):
+        child_1 = deepcopy(parent_1)
+        child_2 = deepcopy(parent_2)
+        for i in range(len(self.__crossover_bitmap)):
+            if self.__crossover_bitmap[i]:
+                child_1[i] = None
+                child_2[i] = None
+        return child_1, child_2
+
+    def __make_subpopulation(self):
         subpopulation = Population()
         cycles_added = set()
         i = 0
-        for cycle in population:
-            if random.uniform(0., 1.) < crossover_selection_parameter:
+        for cycle in self.__population:
+            if random.uniform(0., 1.) < self.__crossover_selection_param:
                 subpopulation.add_cycle(cycle)
                 cycles_added.add(i)
             i += 1
         print(cycles_added)
         if len(subpopulation) % 2:
-            for it in range(len(population)):
+            for it in range(len(self.__population)):
                 if it not in cycles_added:
-                    subpopulation.add_cycle(population[it])
+                    subpopulation.add_cycle(self.__population[it])
                     return subpopulation
         return subpopulation

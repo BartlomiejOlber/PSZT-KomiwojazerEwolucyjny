@@ -21,6 +21,9 @@ class Cycle(object):
     def __getitem__(self, index: int):
         return self.__cities[index]
 
+    def __setitem__(self, index: int, value):
+        self.__cities[index] = value
+
     def get_length(self) -> float:
         self.__length = 0.0
         prev_city = self.__cities[0]
