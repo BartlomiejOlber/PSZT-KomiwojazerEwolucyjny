@@ -26,11 +26,12 @@ def load_data() -> Cycle:
 def init_population():
     cycle = load_data()
     population = Population()
-    population.rand_populate(cycle, 10)
-    population.get_the_best()
-    crossover = Crossover()
-    crossover.uniform_crossover(population, 0.3)
-
+    population.rand_populate(cycle, 50)
+    print("best: {}".format(population.get_the_best().get_length()))
+    crossover = Crossover(population=population, crossover_param=0.5, crossover_selection_param=0.5)
+    crossed_population = crossover.uniform_crossover()
+    print(len(crossed_population))
+    print("best after: {}".format(crossed_population.get_the_best().get_length()))
 
 
 
