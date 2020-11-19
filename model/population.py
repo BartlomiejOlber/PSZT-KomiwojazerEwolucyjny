@@ -9,7 +9,9 @@ class Population(object):
 
     def add_cycle(self, cycle: Cycle):
         self.__cycles.append(cycle)
-        self.__cycle_size
+
+    def remove_cycle(self, index) -> Cycle:
+        return self.__cycles.pop(index)
 
     def rand_populate(self, seed: Cycle, size: int):
         for i in range(size):
@@ -17,8 +19,8 @@ class Population(object):
             random_cycle.randomize()
             self.__cycles.append(random_cycle)
 
-        for cycle in self.__cycles:
-            print(cycle.get_length())
+        # for cycle in self.__cycles:
+        #     print(cycle.get_length())
 
     def __iter__(self):
         return PopulationIterator(self)
@@ -31,7 +33,6 @@ class Population(object):
 
     def get_the_best(self) -> Cycle:
         fittest = min(self.__cycles)
-        print(fittest.get_length())
         return fittest
 
     def get_cycles(self):
@@ -49,11 +50,13 @@ class PopulationIterator(object):
         self._population = population
         self._index = 0
 
-    def next(self):
+    def next(self) -> Cycle:
         if self._index < len(self._population.get_cycles()):
             result = (self._population.get_cycles()[self._index])
             self._index += 1
+            # print("index : {}, length: {}".format(self._index, len(self._population.get_cycles())))
             return result
+
         raise StopIteration
 
     def __next__(self):
