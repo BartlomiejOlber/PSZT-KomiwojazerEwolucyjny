@@ -35,3 +35,9 @@ class Cycle(object):
 
     def randomize(self):
         return random.shuffle(self.__cities)
+
+    def print_cycle(self):
+        i = 1
+        for city in self.__cities:
+            print(" {}.{}".format(i, city.get_name()) if city else " ", end=" ")
+            i += 1

@@ -7,6 +7,15 @@ class City(object):
         self.__name = name
         self.__adjacency_list = adjacency_list
 
+    def __str__(self):
+        return self.__name
+
+    def __eq__(self, other):
+        return self.__name == other.get_name()
+
+    def __hash__(self):
+        return hash(self.__name)
+
     def get_name(self):
         return self.__name
 
