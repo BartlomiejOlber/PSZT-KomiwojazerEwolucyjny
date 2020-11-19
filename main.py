@@ -29,7 +29,7 @@ def init_population():
     population.rand_populate(cycle, 50)
     print("best: {}".format(population.get_the_best().get_length()))
     crossover = Crossover(population=population, crossover_param=0.5, crossover_selection_param=0.5)
-    crossed_population = crossover.uniform_crossover()
+    crossed_population = crossover.one_point_crossover()
     print(len(crossed_population))
     print("best after: {}".format(crossed_population.get_the_best().get_length()))
 
