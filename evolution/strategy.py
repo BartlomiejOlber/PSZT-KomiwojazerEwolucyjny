@@ -3,7 +3,7 @@ from model.population import Population
 import model.cycle
 import pandas as pd
 import random
-from evolution.mutation import Mutation, mutation_type
+from evolution.mutation import Mutation, MutationType
 
 
 class Strategy:
@@ -11,8 +11,6 @@ class Strategy:
         self._generations = generations
         self._mi = mi
         self._lambda = _lambda
-
-
 
     # jakos tak to powinno wygladac
     # mi+lmb
@@ -34,6 +32,7 @@ class Strategy:
     #     tmp = OT            # wlasciwie wszystko to samo co wyzej tylko tutaj nie sumujemy z poczatkowa
     #     populacja = get_mi_najlepszych(tmp)     # z tej sumy wybiearmy mi najlepszych i one beda nasza nastepna populacja bazowa:
 
+
 # def miplus(population: Population, crossover: Crossover, mutation: Mutation, generations: int, mi: int, _lambda: int):
 #     curr_generation = population
 #     OT = Population()
@@ -52,13 +51,10 @@ def miplus(population: Population, mutation: Mutation, generations: int, mi: int
     for i in range(generations):
         OT = Population()
         for j in range(_lambda):
-            OT.add_cycle( curr_generation.__getitem__(random.randint(0, len(curr_generation)-1)))
-        #OT = crossover.uniform_crossover()
-        OT = mutation.mutate(OT)
+            OT.add_cycle(curr_generation[(random.randint(0, len(curr_generation) - 1))])
+        # OT = crossover.uniform_crossover()
+        OT = mutation.mutate()
         for j in curr_generation:
             OT.add_cycle(j)
         curr_generation = OT.get_n_best(mi)
     return curr_generation
-
-
-

@@ -1,4 +1,4 @@
-from evolution.mutation import Mutation, mutation_type
+from evolution.mutation import Mutation, MutationType
 from evolution.strategy import miplus
 from model.cycle import Cycle, City
 from model.population import Population
@@ -40,7 +40,7 @@ def testing(): #UWAGA: NIE DZIALA, czasami wychodzi poza index, dla wiekszych wa
     cycle = load_data()
     population = Population()
     population.rand_populate(cycle, 10)
-
+    crossover = Crossover(population=population, crossover_param=0.5, crossover_selection_param=0.5)
     crossed_population = crossover.one_point_crossover()
     print(len(crossed_population))
     print("best after: {}".format(crossed_population.get_the_best().get_length()))
@@ -52,7 +52,7 @@ def testing(): #UWAGA: NIE DZIALA, czasami wychodzi poza index, dla wiekszych wa
     for cycles in naj:
         print(cycles.get_length())
     #na razie sama mutacja jest, bez krzyzowania
-    mutant = Mutation(mutation_type.EXCHANGE, 0.9)
+    mutant = Mutation(population, MutationType.EXCHANGE, 0.9)
     #dowal algorytmem na tej populacji, 3 generacje, mi = 5, lambda = 10
     mi = miplus(population, mutant, 3, 5, 10)
     #pokaz te po algorytmie

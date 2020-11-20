@@ -24,6 +24,9 @@ class Cycle(object):
     def __setitem__(self, index: int, value):
         self.__cities[index] = value
 
+    def swap(self, index_1: int, index_2: int):
+        self.__cities[index_1], self.__cities[index_2] = self.__cities[index_2], self.__cities[index_1]
+
     def get_length(self) -> float:
         self.__length = 0.0
         prev_city = self.__cities[0]
