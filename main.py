@@ -31,6 +31,7 @@ def init_population():
     population.rand_populate(cycle, 50)
     print("best: {}".format(population.get_the_best().get_length()))
     crossover = Crossover(population=population, crossover_param=0.5, crossover_selection_param=0.5)
+
     crossed_population = crossover.uniform_crossover()
     print(len(crossed_population))
     print("best after: {}".format(crossed_population.get_the_best().get_length()))
@@ -39,6 +40,12 @@ def testing(): #UWAGA: NIE DZIALA, czasami wychodzi poza index, dla wiekszych wa
     cycle = load_data()
     population = Population()
     population.rand_populate(cycle, 10)
+
+    crossed_population = crossover.one_point_crossover()
+    print(len(crossed_population))
+    print("best after: {}".format(crossed_population.get_the_best().get_length()))
+
+
 
     #Pokaz 5 najlepszych
     naj = population.get_n_best(5)
