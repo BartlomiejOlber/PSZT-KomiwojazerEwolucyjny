@@ -44,6 +44,11 @@ class Population(object):
     def __len__(self):
         return len(self.__cycles)
 
+    def get_n_best(self, n: int):       #jak tutaj się dodaje -> Population to wywala błąd, nie mam pojecia czemu
+        tmp = Population()
+        for i in range(n):
+            tmp.add_cycle(sorted(self.__cycles)[i])
+        return tmp
 
 class PopulationIterator(object):
     def __init__(self, population: Population):

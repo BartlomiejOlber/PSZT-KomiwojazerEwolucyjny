@@ -64,7 +64,7 @@ class Mutation():
     def mutate(self, population: Population) -> Population:
         temp_population = Population()
         for curr_cycle in population:
-            if random.uniform(0, 1)>=self._mutation_param:
+            if random.uniform(0, 1)<self._mutation_param:
                 if self._mutation_type == mutation_type.INSERTION:
                     curr_cycle = self._insertion(curr_cycle)
                 elif self._mutation_type == mutation_type.EXCHANGE:

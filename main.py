@@ -1,3 +1,5 @@
+from evolution.mutation import Mutation, mutation_type
+from evolution.strategy import miplus
 from model.cycle import Cycle, City
 from model.population import Population
 from evolution.crossover import Crossover
@@ -19,7 +21,7 @@ def load_data() -> Cycle:
         city_list.append(City(city_name, adjacency_list))
 
     cycle = Cycle(city_list)
-    print(cycle.get_length())
+    # print(cycle.get_length())
     return cycle
 
 
@@ -33,7 +35,25 @@ def init_population():
     print(len(crossed_population))
     print("best after: {}".format(crossed_population.get_the_best().get_length()))
 
+def testing(): #UWAGA: NIE DZIALA, czasami wychodzi poza index, dla wiekszych wartosci mi, lambda i generacji czesciej
+    cycle = load_data()
+    population = Population()
+    population.rand_populate(cycle, 10)
 
+    #Pokaz 5 najlepszych
+    naj = population.get_n_best(5)
+    for cycles in naj:
+        print(cycles.get_length())
+    #na razie sama mutacja jest, bez krzyzowania
+    mutant = Mutation(mutation_type.EXCHANGE, 0.9)
+    #dowal algorytmem na tej populacji, 3 generacje, mi = 5, lambda = 10
+    mi = miplus(population, mutant, 3, 5, 10)
+    #pokaz te po algorytmie
+    print("\n\nNAJLEPSZE:")
+    for cycles in mi:
+        print(cycles.get_length())
 
 if __name__ == '__main__':
-    init_population()
+    #init_population()
+    testing()
+
