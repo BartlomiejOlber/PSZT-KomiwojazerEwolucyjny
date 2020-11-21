@@ -1,3 +1,5 @@
+import copy
+
 from .cycle import Cycle
 from copy import deepcopy
 # from .population_iterator import PopulationIterator
@@ -8,7 +10,7 @@ class Population(object):
         self.__cycles = []
 
     def add_cycle(self, cycle: Cycle):
-        self.__cycles.append(cycle)
+        self.__cycles.append(copy.deepcopy(cycle))
 
     def remove_cycle(self, index) -> Cycle:
         return self.__cycles.pop(index)
@@ -44,7 +46,7 @@ class Population(object):
     def __len__(self):
         return len(self.__cycles)
 
-    def get_n_best(self, n: int):       #jak tutaj się dodaje -> Population to wywala błąd, nie mam pojecia czemu
+    def get_n_best(self, n: int):
         tmp = Population()
         for i in range(n):
             tmp.add_cycle(sorted(self.__cycles)[i])

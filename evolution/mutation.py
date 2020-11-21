@@ -1,6 +1,6 @@
-from model.city import City
+import copy
+
 from model.cycle import Cycle
-from typing import List
 import random
 from model.population import Population
 from enum import Enum
@@ -10,7 +10,6 @@ class MutationType(Enum):
     INSERTION = 0
     EXCHANGE = 1
     SCRUMBLE = 2
-
 
 class Mutation():
 
@@ -24,6 +23,9 @@ class Mutation():
     # def _swap(self, cities: List[City], i: int, j: int) -> List[City]:
     #     cities[j], cities[i] = cities[i], cities[j]
     #     return cities
+    def insert_population(self, population: Population):
+        self._population = copy.copy(population)
+        self._cycle_size = self._population.get_cycle_size()
 
     def _insertion(self, cycle: Cycle) -> Cycle:
         random_index = random.randint(0, self._cycle_size - 1)  # wybieramy losowo jakies miasto z listy
@@ -76,4 +78,5 @@ class Mutation():
                 else:
                     curr_cycle = self._insertion(curr_cycle)
             temp_population.add_cycle(curr_cycle)
+
         return temp_population

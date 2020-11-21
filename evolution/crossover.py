@@ -15,6 +15,12 @@ class Crossover(object):
         self.__crossover_selection_param = crossover_selection_param
         self.__crossover_param = crossover_param
 
+
+    def insert_population(self, population: Population):
+        self.__population = Population
+        self.__cycle_size = population.get_cycle_size()
+        self.__population_size = len(population)
+
     def uniform_crossover(self):
         subpopulation = self.__make_subpopulation()
         it = subpopulation.get_iterator()
