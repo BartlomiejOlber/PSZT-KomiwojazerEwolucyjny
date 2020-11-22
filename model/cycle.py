@@ -1,4 +1,5 @@
 from .city import City
+
 from typing import List
 import random
 

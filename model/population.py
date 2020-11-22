@@ -1,16 +1,15 @@
-import copy
-
 from .cycle import Cycle
+
+from typing import List
 from copy import deepcopy
-# from .population_iterator import PopulationIterator
 
 
 class Population(object):
-    def __init__(self):
-        self.__cycles = []
+    def __init__(self, cycles: List[Cycle] = None):
+        self.__cycles = cycles if cycles else []
 
     def add_cycle(self, cycle: Cycle):
-        self.__cycles.append(copy.deepcopy(cycle))
+        self.__cycles.append(cycle)
 
     def remove_cycle(self, index) -> Cycle:
         return self.__cycles.pop(index)
@@ -20,9 +19,6 @@ class Population(object):
             random_cycle = deepcopy(seed)
             random_cycle.randomize()
             self.__cycles.append(random_cycle)
-
-        # for cycle in self.__cycles:
-        #     print(cycle.get_length())
 
     def __iter__(self):
         return PopulationIterator(self)
@@ -47,10 +43,8 @@ class Population(object):
         return len(self.__cycles)
 
     def get_n_best(self, n: int):
-        tmp = Population()
-        for i in range(n):
-            tmp.add_cycle(sorted(self.__cycles)[i])
-        return tmp
+        return Population(sorted(self.__cycles)[:n])
+
 
 class PopulationIterator(object):
     def __init__(self, population: Population):
@@ -61,7 +55,6 @@ class PopulationIterator(object):
         if self._index < len(self._population.get_cycles()):
             result = (self._population.get_cycles()[self._index])
             self._index += 1
-            # print("index : {}, length: {}".format(self._index, len(self._population.get_cycles())))
             return result
 
         raise StopIteration

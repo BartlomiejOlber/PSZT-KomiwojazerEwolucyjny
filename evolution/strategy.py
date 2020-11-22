@@ -1,81 +1,70 @@
 import copy
-from enum import Enum
-
-from numpy.distutils.fcompiler import none
-
-from evolution.crossover import Crossover
-from model.population import Population
 import random
-from evolution.mutation import Mutation, MutationType
+from tqdm import tqdm
 
-class Strategy_type(Enum):
-    MIPLUS = 0
-    MICOMMA = 1
-
-class Strategy:
-    def __init__(self, generations: int, mi: int, lmbd: int, strategy_type: Strategy_type):
-        self._generations = generations
-        self._mi = mi
-        self._lmbd = lmbd
-        self._strategy_type = strategy_type
-        # te dodajemy pozniej:
-        self._population = none
+from model.population import Population
+from model.evolution_params import EvolutionParams
+from evolution.crossover import Crossover
+from evolution.mutation import Mutation
+from model.types import StrategyType
 
 
-    def insert_population(self, population: Population):
+class Strategy(object):
+    def __init__(self, evolution_params: EvolutionParams, mutation: Mutation, crossover: Crossover,
+                 population: Population = None):
+        self._generations = evolution_params.generations
+        self._mi = evolution_params.mi
+        self._lambda = evolution_params.lmbd
+        self._strategy_type = evolution_params.strategy_type
+        self._crossover = crossover
+        self._mutation = mutation
         self._population = population
 
-    def insert_crossover(self, crossover: Crossover):
-        self._crossover = crossover
-
-    def insert_mutation(self, mutation: Mutation):
-        self._mutation = mutation
-
     def change_strategy(self):
-        if(self._strategy_type == Strategy_type.MIPLUS):
-            self._strategy_type = Strategy_type.MICOMMA
+        if self._strategy_type is StrategyType.MIPLUS:
+            self._strategy_type = StrategyType.MICOMMA
         else:
-            self._strategy_type = Strategy_type.MIPLUS
+            self._strategy_type = StrategyType.MIPLUS
 
-    def miplus(self):
-        curr_generation = copy.deepcopy(self._population)
-        for i in range(self._generations):
-            OT = Population()
-            for j in range(self._lmbd):
-                OT.add_cycle(curr_generation[(random.randint(0, len(curr_generation) - 1))])
+    def set_population(self, population: Population):
+        self._population = copy.deepcopy(population)
 
-            # self._crossover.insert_population(OT)
-            # OT = self._crossover.one_point_crossover()
+    def miplus(self) -> Population:
+        print("STRATEGY START BEST:{}".format(self._population.get_the_best().get_length()))
+        for i in tqdm(range(self._generations)):
+            next_generation = Population()
+            for j in range(self._lambda):
+                next_generation.add_cycle(self._population[(random.randint(0, len(self._population) - 1))])
 
-            self._mutation.insert_population(OT)
-            OT = self._mutation.mutate()
+            self._crossover.insert_next_generation(next_generation)
+            next_generation = self._crossover.do_crossover()
 
-            for j in sorted(curr_generation):
-                OT.add_cycle(j)
-            curr_generation = OT.get_n_best(self._mi)
-        return curr_generation
+            self._mutation.set_next_generation(next_generation)
+            next_generation = self._mutation.mutate()
 
-    def micomma(self):
-        curr_generation = copy.deepcopy(self._population)
-        for i in range(self._generations):
-            OT = Population()
-            for j in range(self._lmbd):
-                OT.add_cycle(curr_generation[(random.randint(0, len(curr_generation) - 1))])
+            for j in sorted(self._population):
+                next_generation.add_cycle(j)
+            self._population = next_generation.get_n_best(self._mi)
+        return self._population
 
-            #self._crossover.insert_population(OT)
-            #OT = self._crossover.one_point_crossover()
+    def micomma(self) -> Population:
+        print("STRATEGY START BEST:{}".format(self._population.get_the_best().get_length()))
+        for i in tqdm(range(self._generations)):
+            next_generation = Population()
+            for j in range(self._lambda):
+                next_generation.add_cycle(self._population[(random.randint(0, len(self._population) - 1))])
 
-            self._mutation.insert_population(OT)
-            OT = self._mutation.mutate()
+            self._crossover.insert_next_generation(next_generation)
+            next_generation = self._crossover.do_crossover()
 
-            curr_generation = OT.get_n_best(self._mi)
-        return curr_generation
+            self._mutation.set_next_generation(next_generation)
+            next_generation = self._mutation.mutate()
+
+            self._population = next_generation.get_n_best(self._mi)
+        return self._population
 
     def evolve(self):
-        if(self._strategy_type == Strategy_type.MIPLUS):
+        if self._strategy_type is StrategyType.MIPLUS:
             return self.miplus()
         else:
             return self.micomma()
-
-
-

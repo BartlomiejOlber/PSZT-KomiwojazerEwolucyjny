@@ -1,38 +1,28 @@
+from model.population import Population
+from model.cycle import Cycle
+from model.evolution_params import EvolutionParams
+from model.types import MutationType
+
+import random
 import copy
 
-from model.cycle import Cycle
-import random
-from model.population import Population
-from enum import Enum
 
-
-class MutationType(Enum):
-    INSERTION = 0
-    EXCHANGE = 1
-    SCRUMBLE = 2
-
-class Mutation():
-
-    # lista cykli miast (populacja), typ mutacji, szansa mutacji
-    def __init__(self, population: Population, mutation_type: MutationType, mutation_param: float):
+class Mutation(object):
+    def __init__(self, population: Population, evolution_params: EvolutionParams):
         self._population = population
         self._cycle_size = population.get_cycle_size()
-        self._mutation_type = mutation_type
-        self._mutation_param = mutation_param
+        self._mutation_type = evolution_params.mutation_type
+        self._mutation_param = evolution_params.mutation_param
 
-    # def _swap(self, cities: List[City], i: int, j: int) -> List[City]:
-    #     cities[j], cities[i] = cities[i], cities[j]
-    #     return cities
-    def insert_population(self, population: Population):
+    def set_next_generation(self, population: Population):
         self._population = copy.copy(population)
-        self._cycle_size = self._population.get_cycle_size()
 
     def _insertion(self, cycle: Cycle) -> Cycle:
-        random_index = random.randint(0, self._cycle_size - 1)  # wybieramy losowo jakies miasto z listy
-        random_destination = random.randint(0, self._cycle_size - 1)  # wybieramy losowo kolejne miasto z listy, moze byc problem bo moze to byc to samo miasto
+        random_index = random.randint(0, self._cycle_size - 1)
+        random_destination = random.randint(0, self._cycle_size - 1)
         while random_destination == random_index:
             random_destination = random.randint(0, self._cycle_size - 1)
-        if random_index < random_destination:  # przesuwamy miasto pierwsze na miejsce drugiego, NIE ZAMIENIAMY ICH
+        if random_index < random_destination:
             temp = cycle[random_index]
             for i in range(random_index, random_destination):
                 cycle[i] = cycle[i + 1]
@@ -44,7 +34,6 @@ class Mutation():
             cycle[random_destination] = temp
         return cycle
 
-    # w cyklu zamieniamy ze soba dwa miasta i zwracamy to, co wyjdzie
     def _exchange(self, cycle: Cycle) -> Cycle:
         i = random.randint(0, self._cycle_size - 1)
         j = random.randint(0, self._cycle_size - 1)
@@ -56,7 +45,7 @@ class Mutation():
     def _scramble(self, cycle: Cycle) -> Cycle:
         random_index_start = random.randint(0, self._cycle_size - 1)
         random_index_end = random.randint(0, self._cycle_size - 1)
-        while random_index_end == random_index_start:  # upewniamy się że start != end
+        while random_index_end == random_index_start:
             random_index_end = random.randint(0, self._cycle_size - 1)
         i = random_index_start
         while i % self._cycle_size != random_index_end:
@@ -73,7 +62,7 @@ class Mutation():
                     curr_cycle = self._insertion(curr_cycle)
                 elif self._mutation_type == MutationType.EXCHANGE:
                     curr_cycle = self._exchange(curr_cycle)
-                elif self._mutation_type == MutationType.SCRUMBLE:
+                elif self._mutation_type == MutationType.SCRAMBLE:
                     curr_cycle = self._scramble(curr_cycle)
                 else:
                     curr_cycle = self._insertion(curr_cycle)

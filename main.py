@@ -1,16 +1,17 @@
-from evolution.mutation import Mutation, MutationType
-from evolution.strategy import Strategy, Strategy_type
-import evolution.strategy as strategy
+from evolution.mutation import Mutation
+from evolution.strategy import Strategy
+from evolution.crossover import Crossover
 from model.cycle import Cycle, City
 from model.population import Population
-from evolution.crossover import Crossover
+from model.evolution_params import EvolutionParams
+
 import pandas as pd
-import random
+import argparse
 
 
-def load_data() -> Cycle:
+def load_data(cities_number: int) -> Cycle:
     data = pd.read_csv('data/cities.csv')
-    cities = data.iloc[:10,:10]
+    cities = data.iloc[:cities_number, :cities_number]
     city_list = []
     for city_name in cities:
         city_id = 0
@@ -25,52 +26,55 @@ def load_data() -> Cycle:
     return cycle
 
 
-def init_population():
-    cycle = load_data()
+def init_population(cities_number: int, population_size: int) -> Population:
+    cycle = load_data(cities_number)
     population = Population()
-    population.rand_populate(cycle, 30)
-    print("best: {}".format(population.get_the_best().get_length()))
-    crossover = Crossover(population=population, crossover_param=0.5, crossover_selection_param=0.5)
+    population.rand_populate(cycle, population_size)
+    return population
 
-    crossed_population = crossover.uniform_crossover()
-    print(len(crossed_population))
-    print("best after: {}".format(crossed_population.get_the_best().get_length()))
 
 def testing():
-    cycle = load_data()
-    population = Population()
-    population.rand_populate(cycle, 30)
-    #Pokaz 5 najlepszych
+    evolution_params = parse_args()
+    population = init_population(evolution_params.cities, evolution_params.mi)
+    mutation = Mutation(population=population, evolution_params=evolution_params)
+    crossover = Crossover(population=population, evolution_params=evolution_params)
+    strategy = Strategy(evolution_params=evolution_params, mutation=mutation, crossover=crossover,
+                        population=population)
+
     naj = population.get_n_best(5)
     for cycles in naj:
         print(cycles.get_length())
 
-
-    strategy = Strategy(10,20,60,Strategy_type.MICOMMA)
-    mutation = Mutation(population=population, mutation_type=MutationType.EXCHANGE, mutation_param=0.5)
-    crossover = Crossover(population=population, crossover_param=0.5, crossover_selection_param=0.5)
-    strategy.insert_crossover(crossover)
-    strategy.insert_mutation(mutation)
-    strategy.insert_population(population=population)
-    #na razie sama mutacja jest, bez krzyzowania
     mi = strategy.evolve()
-    #pokaz te po algorytmie
     print("\n\nNAJLEPSZE:")
     print(mi.get_the_best().get_length())
     mi.get_the_best().print_cycle()
 
     strategy.change_strategy()
-
+    strategy.set_population(population)
     mi = strategy.evolve()
-    # pokaz te po algorytmie
     print("\n\nNAJLEPSZE MIPLUS:")
     print(mi.get_the_best().get_length())
     mi.get_the_best().print_cycle()
+    print()
+
+
+def parse_args() -> EvolutionParams:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-c", "--cities", type=int, required=True, help="cycle size")
+    ap.add_argument("-m", "--mi", type=int, required=True, help="base population size")
+    ap.add_argument("-l", "--lambda", type=int, required=True, help="number of cycles taking part in reproduction")
+    ap.add_argument("-g", "--generations", type=int, required=True, help="number of algorithm iterations")
+    ap.add_argument("-mp", "--mutation_param", type=float, required=True, help="probability of mutation")
+    ap.add_argument("-cp", "--crossover_param", type=float, required=True, help="probability of crossover")
+    ap.add_argument("-u", "--uniform_crossover_param", type=float, required=False, help="probability of genome cross")
+    ap.add_argument("-mt", "--mutation_type", type=str, required=False, help="\"exchange\", \"insertion\" or "
+                                                                             "\"scramble\"")
+    ap.add_argument("-ct", "--crossover_type", type=str, required=False, help="\"uniform\" or \"one_point\"")
+    ap.add_argument('-p', "--plus", action='store_true', help="mi plus lambda strategy if flag is set")
+    args = vars(ap.parse_args())
+    return EvolutionParams(args)
 
 
 if __name__ == '__main__':
-    #init_population()
     testing()
-
-
-
