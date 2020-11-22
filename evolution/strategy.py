@@ -30,9 +30,7 @@ class Strategy(object):
         self._population = copy.deepcopy(population)
 
     def miplus(self) -> Population:
-        print("STRATEGY START BEST:{}".format(self._population.get_the_best().get_length()))
         for i in tqdm(range(self._generations)):
-            print("PRZED MUTACJA BEST: {}".format(self._population.get_the_best().get_length()))
             next_generation = Population()
             for j in range(self._lambda):
                 next_generation.add_cycle(self._population[(random.randint(0, len(self._population) - 1))])
@@ -46,12 +44,10 @@ class Strategy(object):
             for j in sorted(self._population):
                 next_generation.add_cycle(j)
 
-            print("Po MUTACJA BEST: {}".format(self._population.get_the_best().get_length()))
             self._population = next_generation.get_n_best(self._mi)
         return self._population
 
     def micomma(self) -> Population:
-        print("STRATEGY START BEST:{}".format(self._population.get_the_best().get_length()))
         for i in tqdm(range(self._generations)):
             next_generation = Population()
             for j in range(self._lambda):

@@ -4,7 +4,6 @@ from model.evolution_params import EvolutionParams
 from model.types import MutationType
 
 import random
-import copy
 
 
 class Mutation(object):
@@ -15,7 +14,7 @@ class Mutation(object):
         self._mutation_param = evolution_params.mutation_param
 
     def set_next_generation(self, population: Population):
-        self._population = copy.copy(population)
+        self._population = population
 
     def _insertion(self, cycle: Cycle) -> Cycle:
         random_index = random.randint(0, self._cycle_size - 1)

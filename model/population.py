@@ -1,7 +1,7 @@
 from .cycle import Cycle
 
 from typing import List
-from copy import deepcopy, copy
+from copy import deepcopy
 
 
 class Population(object):
