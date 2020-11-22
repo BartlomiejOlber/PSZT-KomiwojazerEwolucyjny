@@ -1,7 +1,7 @@
 from .cycle import Cycle
 
 from typing import List
-from copy import deepcopy
+from copy import deepcopy, copy
 
 
 class Population(object):
@@ -9,7 +9,7 @@ class Population(object):
         self.__cycles = cycles if cycles else []
 
     def add_cycle(self, cycle: Cycle):
-        self.__cycles.append(cycle)
+        self.__cycles.append(Cycle(cycle[:]))
 
     def remove_cycle(self, index) -> Cycle:
         return self.__cycles.pop(index)
