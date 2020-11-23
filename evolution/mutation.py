@@ -36,7 +36,7 @@ class Mutation(object):
     def _exchange(self, cycle: Cycle) -> Cycle:
         i = random.randint(0, self._cycle_size - 1)
         j = random.randint(0, self._cycle_size - 1)
-        while j is i:
+        while j == i:
             j = random.randint(0, self._cycle_size - 1)
         cycle.swap(i, j)
         return cycle

@@ -21,7 +21,7 @@ class Strategy(object):
         self._population = population
 
     def change_strategy(self):
-        if self._strategy_type is StrategyType.MIPLUS:
+        if self._strategy_type == StrategyType.MIPLUS:
             self._strategy_type = StrategyType.MICOMMA
         else:
             self._strategy_type = StrategyType.MIPLUS
@@ -63,7 +63,7 @@ class Strategy(object):
         return self._population
 
     def evolve(self):
-        if self._strategy_type is StrategyType.MIPLUS:
+        if self._strategy_type == StrategyType.MIPLUS:
             return self.miplus()
         else:
             return self.micomma()

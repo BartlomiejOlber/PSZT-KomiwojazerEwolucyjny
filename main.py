@@ -73,6 +73,10 @@ def parse_args() -> EvolutionParams:
     ap.add_argument("-ct", "--crossover_type", type=str, required=False, help="\"uniform\" or \"one_point\"")
     ap.add_argument('-p', "--plus", action='store_true', help="mi plus lambda strategy if flag is set")
     args = vars(ap.parse_args())
+    print("{}".format(args["crossover_type"]))
+    if args["crossover_type"] == "uniform" and not args["uniform_crossover_param"]:
+        print("you need to provide -u param")
+        exit(-1)
     return EvolutionParams(args)
 
 

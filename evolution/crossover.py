@@ -3,7 +3,6 @@ from model.evolution_params import EvolutionParams
 from model.types import CrossoverType
 
 import random
-from copy import deepcopy
 
 
 class Crossover(object):
@@ -92,7 +91,7 @@ class Crossover(object):
     def _make_crossover_bitmap(self):
         self.__crossover_bitmap = []
         for i in range(self._cycle_size):
-            if random.uniform(0., 1.) < self._crossover_param:
+            if random.uniform(0., 1.) < self._uniform_crossover_param:
                 self.__crossover_bitmap.append(1)
             else:
                 self.__crossover_bitmap.append(0)
