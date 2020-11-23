@@ -98,8 +98,8 @@ class Crossover(object):
                 self.__crossover_bitmap.append(0)
 
     def _make_children(self, parent_1: Cycle, parent_2: Cycle, one_point: bool = False, division_id=0):
-        child_1 = deepcopy(parent_1)
-        child_2 = deepcopy(parent_2)
+        child_1 = Cycle(parent_1[:])
+        child_2 = Cycle(parent_2[:])
         for i in range(division_id, self._cycle_size):
             if one_point or self.__crossover_bitmap[i]:
                 child_1[i] = None
