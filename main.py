@@ -7,6 +7,8 @@ from model.evolution_params import EvolutionParams
 
 import pandas as pd
 import argparse
+import matplotlib.pyplot as plt
+plt.style.use('seaborn-whitegrid')
 
 
 def load_data(cities_number: int) -> Cycle:
@@ -33,9 +35,9 @@ def init_population(cities_number: int, population_size: int) -> Population:
     return population
 
 
-def testing():
+def perform_evolutions():
     evolution_params = parse_args()
-    population = init_population(evolution_params.cities, evolution_params.mi)
+    population = init_population(evolution_params.cities, evolution_params.mu)
     mutation = Mutation(population=population, evolution_params=evolution_params)
     crossover = Crossover(population=population, evolution_params=evolution_params)
     strategy = Strategy(evolution_params=evolution_params, mutation=mutation, crossover=crossover,
@@ -45,24 +47,37 @@ def testing():
     for cycles in naj:
         print(cycles.get_length())
 
-    mi = strategy.evolve()
+    mu = strategy.evolve()
+    log = strategy.get_log()
+    x = []
+    x.extend(range(len(log)))
+    fig, ax = plt.subplots()
+    ax.plot(x, log, 'o', label=evolution_params.strategy_type.name)
+    leg = ax.legend()
+    plt.draw()
+    plt.waitforbuttonpress(0)
     print("\n\nNAJLEPSZE:")
-    print(mi.get_the_best().get_length())
-    mi.get_the_best().print_cycle()
+    print(mu.get_the_best().get_length())
+    mu.get_the_best().print_cycle()
 
     strategy.change_strategy()
     strategy.set_population(population)
-    mi = strategy.evolve()
+    mu = strategy.evolve()
+    log = strategy.get_log()
+    ax.plot(x, log, 'o', label=strategy.get_type().name)
+    leg = ax.legend()
+    plt.draw()
+    plt.waitforbuttonpress(0)
     print("\n\nNAJLEPSZE MIPLUS:")
-    print(mi.get_the_best().get_length())
-    mi.get_the_best().print_cycle()
+    print(mu.get_the_best().get_length())
+    mu.get_the_best().print_cycle()
     print()
 
 
 def parse_args() -> EvolutionParams:
     ap = argparse.ArgumentParser()
     ap.add_argument("-c", "--cities", type=int, required=True, help="cycle size")
-    ap.add_argument("-m", "--mi", type=int, required=True, help="base population size")
+    ap.add_argument("-m", "--mu", type=int, required=True, help="base population size")
     ap.add_argument("-l", "--lambda", type=int, required=True, help="number of cycles taking part in reproduction")
     ap.add_argument("-g", "--generations", type=int, required=True, help="number of algorithm iterations")
     ap.add_argument("-mp", "--mutation_param", type=float, required=True, help="probability of mutation")
@@ -81,4 +96,4 @@ def parse_args() -> EvolutionParams:
 
 
 if __name__ == '__main__':
-    testing()
+    perform_evolutions()

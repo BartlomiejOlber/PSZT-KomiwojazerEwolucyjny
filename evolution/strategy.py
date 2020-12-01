@@ -13,24 +13,33 @@ class Strategy(object):
     def __init__(self, evolution_params: EvolutionParams, mutation: Mutation, crossover: Crossover,
                  population: Population = None):
         self._generations = evolution_params.generations
-        self._mi = evolution_params.mi
+        self._mi = evolution_params.mu
         self._lambda = evolution_params.lmbd
         self._strategy_type = evolution_params.strategy_type
         self._crossover = crossover
         self._mutation = mutation
         self._population = population
+        self._evolution_log = []
+
+    def get_log(self):
+        return self._evolution_log
 
     def change_strategy(self):
-        if self._strategy_type == StrategyType.MIPLUS:
-            self._strategy_type = StrategyType.MICOMMA
+        if self._strategy_type == StrategyType.MU_PLUS:
+            self._strategy_type = StrategyType.MU_COMMA
         else:
-            self._strategy_type = StrategyType.MIPLUS
+            self._strategy_type = StrategyType.MU_PLUS
 
     def set_population(self, population: Population):
         self._population = copy.deepcopy(population)
 
-    def miplus(self) -> Population:
+    def get_type(self):
+        return self._strategy_type
+
+    def _mu_plus(self) -> Population:
+        self._evolution_log.clear()
         for i in tqdm(range(self._generations)):
+            self._evolution_log.append(self._population.get_the_best().get_length())
             next_generation = Population()
             for j in range(self._lambda):
                 next_generation.add_cycle(self._population[(random.randint(0, len(self._population) - 1))])
@@ -47,8 +56,10 @@ class Strategy(object):
             self._population = next_generation.get_n_best(self._mi)
         return self._population
 
-    def micomma(self) -> Population:
+    def _mu_comma(self) -> Population:
+        self._evolution_log.clear()
         for i in tqdm(range(self._generations)):
+            self._evolution_log.append(self._population.get_the_best().get_length())
             next_generation = Population()
             for j in range(self._lambda):
                 next_generation.add_cycle(self._population[(random.randint(0, len(self._population) - 1))])
@@ -63,7 +74,7 @@ class Strategy(object):
         return self._population
 
     def evolve(self):
-        if self._strategy_type == StrategyType.MIPLUS:
-            return self.miplus()
+        if self._strategy_type == StrategyType.MU_PLUS:
+            return self._mu_plus()
         else:
-            return self.micomma()
+            return self._mu_comma()

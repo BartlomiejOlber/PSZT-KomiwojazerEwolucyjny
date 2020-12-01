@@ -2,17 +2,17 @@ from enum import Enum
 
 
 class StrategyType(Enum):
-    MIPLUS = 0
-    MICOMMA = 1
-    DEFAULT = MIPLUS
+    MU_PLUS = 0
+    MU_COMMA = 1
+    DEFAULT = MU_PLUS
 
     @staticmethod
     def make(type_name: str = None) -> 'StrategyType':
         if type_name:
-            if type_name.upper() == StrategyType.MIPLUS.name:
-                return StrategyType.MIPLUS
-            elif type_name.upper() == StrategyType.MICOMMA.name:
-                return StrategyType.MICOMMA
+            if type_name.upper() == StrategyType.MU_PLUS.name:
+                return StrategyType.MU_PLUS
+            elif type_name.upper() == StrategyType.MU_COMMA.name:
+                return StrategyType.MU_COMMA
         return StrategyType.DEFAULT
 
 
