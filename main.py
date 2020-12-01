@@ -53,6 +53,9 @@ def perform_evolutions():
     x.extend(range(len(log)))
     fig, ax = plt.subplots()
     ax.plot(x, log, 'o', label=evolution_params.strategy_type.name)
+    plt.xlabel("Generations")
+
+    plt.ylabel("Cities cycle summary distance (km)")
     leg = ax.legend()
     plt.draw()
     plt.waitforbuttonpress(0)
